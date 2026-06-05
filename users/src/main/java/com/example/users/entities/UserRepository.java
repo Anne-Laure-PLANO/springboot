@@ -1,5 +1,9 @@
 package com.example.users.entities;
 
-public interface User {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.UUID;
+
+public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
 }

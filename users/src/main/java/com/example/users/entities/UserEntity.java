@@ -1,20 +1,46 @@
 package com.example.users.entities;
 
+import com.example.users.domain.User;
+import jakarta.persistence.*;
+
 import java.util.UUID;
 
+@Entity
+@Table(name="users")
 public class UserEntity {
-    private final UUID userId;
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private UUID id;
     private String firstName;
     private String lastName;
+    private String mail;
 
-    public UserEntity(UUID userId, String firstName, String lastName) {
-        this.userId = userId;
-        this.firstName = firstName;
-        this.lastName = lastName;
+
+    public UserEntity(){
     }
 
-    public UUID getUserId() {
-        return userId;
+    public UserEntity(String firstName, String lastName, String mail) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.mail = mail;
+    }
+
+    public UserEntity(UUID userId, String firstName, String lastName, String mail) {
+        this.id = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.mail = mail;
+
+    }
+
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -31,5 +57,13 @@ public class UserEntity {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 }
