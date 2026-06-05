@@ -1,6 +1,6 @@
 # Création d'un container Docker servant au stockage des données de jeu
 services:
-  postgres:
+  postgres-game:
     image: postgres:alpine
     environment:
       POSTGRES_DB: demo
@@ -10,6 +10,16 @@ services:
       - "5432:5432"
     volumes:
       - demo:/var/lib/postgresql
-
+  postgres-users:
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: demo
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    ports:
+      - "5433:5433"
+    volumes:
+      - users:/var/lib/postgresql
 volumes:
   demo:
+  users:
