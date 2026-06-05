@@ -1,4 +1,9 @@
 package com.example.users.dto;
 
-public class UserCreateParams {
-}
+public record UserCreateParams (
+    String firstName,
+    String lastName
+    )
+
+
+{}

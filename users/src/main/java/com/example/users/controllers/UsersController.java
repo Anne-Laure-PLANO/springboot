@@ -3,6 +3,8 @@ package com.example.users.controllers;
 
 import com.example.users.User;
 import com.example.users.dto.UserCreateParams;
+import com.example.users.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,6 +12,9 @@ import java.util.UUID;
 
 @Controller("/users")
 public class UsersController {
+
+    @Autowired
+    private UserService userServiceImpl;
 
     @PostMapping("/")
     public User createUser(@RequestBody UserCreateParams params){
