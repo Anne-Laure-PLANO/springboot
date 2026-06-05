@@ -13,6 +13,8 @@ public interface GamePlugin {
 
     Game createGame(int boardSize);
 
+    Game createGame(int playerCount, int boardSize);
+
 
     String getName(Locale locale);
 

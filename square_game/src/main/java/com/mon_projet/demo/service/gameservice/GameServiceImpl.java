@@ -22,15 +22,16 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Game createGame(GameCreationParameters params) {
-        Game newGame = null;
         for (GamePlugin factory : plugins){
             if (factory.getFactoryId().equals(params.factoryId())){
-                newGame = factory.createGame(params.boardSize());
+                Game newGame = (params.playerCount() != null)
+                        ? factory.createGame(params.playerCount(), params.boardSize())
+                        : factory.createGame(params.boardSize());
                 data.upsert(newGame);
-                break;
+                return newGame;
             }
         }
-        return newGame;
+        throw new IllegalArgumentException("Unknown factoryId: " + params.factoryId());
     }
 
     @Override
@@ -40,34 +41,29 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Optional<GameStatus> getStatus(UUID gameId) {
-        Optional<Game> game = data.findById(gameId.toString());
-        return game.map(g-> g.getStatus());
+        return data.findById(gameId.toString()).map(Game::getStatus);
     }
 
     @Override
     public Optional<Collection<Token>> getAvailableTokens (UUID gameId) {
-        return  data.findById(gameId.toString()).map(g -> g.getRemainingTokens());
+        return  data.findById(gameId.toString()).map(Game::getRemainingTokens);
 
     }
 
     @Override
     public Optional<Game> playMove(UUID gameId, int x, int y) throws InvalidPositionException {
         CellPosition newPosition = new CellPosition(x, y);
-        Game game = data.findById(gameId.toString()).orElse(null);
-        if (game != (null)) {
-            try {
-                game.getRemainingTokens()
-                        .stream()
-                        .findFirst()
-                        .get()
-                        .moveTo(newPosition);
-
-                data.upsert(game);
-
-            } catch (InvalidPositionException e) {
-                throw new InvalidPositionException(e.getMessage());
-            }
+        Optional<Game> optGame = data.findById(gameId.toString());
+        if (optGame.isEmpty()) {
+            return Optional.empty();
         }
-        return Optional.ofNullable(game);
+        Game game = optGame.get();
+        Token token = game.getRemainingTokens()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No tokens available to move"));
+        token.moveTo(newPosition);
+        data.upsert(game);
+        return Optional.of(game);
     }
 }

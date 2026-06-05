@@ -38,6 +38,11 @@ public class ConnectFourPlugin implements GamePlugin {
     }
 
     @Override
+    public Game createGame(int playerCount, int boardSize){
+        return factory.createGame(playerCount, boardSize);
+    }
+
+    @Override
     public Game createGame(){
         return factory.createGame(playerCount,boardSize);
     }

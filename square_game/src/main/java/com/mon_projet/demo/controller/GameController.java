@@ -9,7 +9,6 @@ import fr.le_campus_numerique.square_games.engine.Game;
 import fr.le_campus_numerique.square_games.engine.GameStatus;
 import fr.le_campus_numerique.square_games.engine.InvalidPositionException;
 import fr.le_campus_numerique.square_games.engine.Token;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -19,7 +18,6 @@ import java.util.UUID;
 @RestController
 public class GameController {
 
-    @Autowired
     private final GameService gameService;
 
     public GameController(GameService gameService) {
