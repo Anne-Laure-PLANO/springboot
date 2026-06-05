@@ -14,7 +14,7 @@ No root `pom.xml` — build/test each module from its own directory.
 ## Prerequisites
 
 - Java 21, Docker (for PostgreSQL containers via `compose.yml`)
-- `.env` files: `square_game/.env` and `users/.env` both need `POSTGRES_PASSWORD=demo`
+- **Root `.env`** (next to `compose.yml`) must have `POSTGRES_PASSWORD:demo` — Docker Compose reads `.env` from the project root, **not** from module subdirectories.
 - `.env` files use Docker Compose colon syntax (`POSTGRES_PASSWORD:demo`) — **not** `KEY=VALUE`
 - External engine dependency: `fr.le-campus-numerique.square-games:engine:1.0-SNAPSHOT` — must be in local `.m2` or a configured remote. Without it `square_game` won't compile.
 - Repository for snapshots: `https://repo.spring.io/snapshot`
@@ -41,21 +41,22 @@ docker compose up -d
 - `HeartbeatController`: `GET /heartbeat`
 - `spring.main.allow-bean-definition-overriding=true` in `application.properties`
 - JPA: `spring.jpa.hibernate.ddl-auto=update` — tables auto-created; `schema.sql` is for JDBC only and contains **invalid SQL** (`VAR` not a PG type)
-- I18n: `messages.properties` / `messages_fr.properties` with `spring.messages.basename=messages`. **Bug**: actual file is named `message_fr.properties` (missing `s`) — French translations won't load
+- I18n: `messages.properties` / `messages_fr.properties`
 - `GameCreationParameters` record: `(String factoryId, Integer playerCount, Integer boardSize)`
 - Plugin config: `@Value("${game.<name>.default-player-count}")` and `@Value("${game.<name>.default-board-size}")`
+- Tests: `GameControllerTest` uses pure Mockito (no `@WebMvcTest`, no Jackson serialization), `CatalogControllerTest` & `HeartbeatControllerTest` use `@WebMvcTest`
 
-## Architecture — users (scaffolding, broken)
+## Architecture — users
 
-- `@Controller("/users")` on `UsersController` is **wrong** — needs `@RestController` + `@RequestMapping("/users")`
-- All controller methods use `@RequestParam` but map via `/{id}` — should be `@PathVariable`; all return `null`
-- **Database name mismatch**: `compose.yml` creates database `demo` on port 5433, but `application.properties` points to `jdbc:postgresql://localhost:5433/users` — startup will fail
-- `spring-boot-starter-data-jpa` is **missing** from `pom.xml`; `JpaUserRepository` and `spring.jpa.hibernate.ddl-auto=update` config won't work
-- `UserService` / `UserRepository` interfaces are empty; `UserServiceImpl` is a stub
-- `.env` is empty (0 bytes)
+- `UsersController`: `@RestController` + `@RequestMapping("/users")` with `@PathVariable` and full CRUD via `UserServiceImpl`
+- `UserService` interface: `createUser`, `getUserById`, `deleteUser`, `isUserExist`
+- `UserServiceImpl`: backed by `JpaUserRepository` (JPA) with entity↔domain conversion
+- `JpaUserRepository` extends `JpaRepository<UserEntity, UUID>` — Hibernate auto-creates `users` table
+- `UserEntity`: JPA `@Entity` with `@Id`, `@Column(nullable=false)`, no-arg constructor
+- **Database name mismatch**: `compose.yml` creates database `demo` on port 5433, but `application.properties` points to `jdbc:postgresql://localhost:5433/users` — startup will fail unless you create the `users` DB manually or fix the compose.yml
 
 ## Tests
 
-- **Only one test**: `users/src/test/.../UsersApplicationTests.java` — basic `@SpringBootTest` context load
-- `square_game` has **no test directory at all**
-- Run all: `./mvnw test` (or `verify`)
+- **users**: `UsersApplicationTests.java` — basic `@SpringBootTest` context load (requires Docker DB running)
+- **square_game**: 35 tests total (12 `GameServiceTest`, 8 `InMemoryGameDaoTest`, 9 `GameControllerTest`, 3 `GameCatalogImplTest`, 2 `CatalogControllerTest`, 1 `HeartbeatControllerTest`)
+- Run all for a module: `./mvnw test` (or `verify`)

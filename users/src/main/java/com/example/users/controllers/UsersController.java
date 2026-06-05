@@ -1,16 +1,15 @@
 package com.example.users.controllers;
 
-
 import com.example.users.User;
 import com.example.users.dto.UserCreateParams;
 import com.example.users.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Controller("/users")
+@RestController
+@RequestMapping("/users")
 public class UsersController {
 
     @Autowired
@@ -18,23 +17,21 @@ public class UsersController {
 
     @PostMapping("/")
     public User createUser(@RequestBody UserCreateParams params){
-        return null;
+        return userServiceImpl.createUser(params);
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@RequestParam UUID id){
-        return null;
+    public User getUserById(@PathVariable UUID id){
+        return userServiceImpl.getUserById(id);
     }
 
     @DeleteMapping("/{id}")
-    public User deleteUser (@RequestParam UUID id) {
-
-        return null;
+    public User deleteUser(@PathVariable UUID id) {
+        return userServiceImpl.deleteUser(id);
     }
 
     @GetMapping("/{id}/valid")
-    public User isUserExist(@RequestParam UUID id){
-
-        return null;
+    public User isUserExist(@PathVariable UUID id){
+        return userServiceImpl.isUserExist(id);
     }
 }

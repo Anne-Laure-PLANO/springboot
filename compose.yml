@@ -3,23 +3,23 @@ services:
   postgres-game:
     image: postgres:alpine
     environment:
-      POSTGRES_DB: demo
-      POSTGRES_USER: demo
+      POSTGRES_DB: game
+      POSTGRES_USER: game
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     ports:
       - "5432:5432"
     volumes:
-      - demo:/var/lib/postgresql
+      - game:/var/lib/postgresql
   postgres-users:
     image: postgres:alpine
     environment:
-      POSTGRES_DB: demo
-      POSTGRES_USER: demo
+      POSTGRES_DB: users
+      POSTGRES_USER: users
       POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     ports:
-      - "5433:5433"
+      - "5433:5432"
     volumes:
       - users:/var/lib/postgresql
 volumes:
-  demo:
+  game:
   users:
