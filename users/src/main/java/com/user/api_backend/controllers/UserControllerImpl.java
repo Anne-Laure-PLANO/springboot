@@ -1,9 +1,9 @@
-package com.example.users.controllers;
+package com.user.api_backend.controllers;
 
 
-import com.example.users.entities.User;
-import com.example.users.dto.UserCreateParams;
-import com.example.users.services.UserService;
+import com.user.api_backend.entities.User;
+import com.user.api_backend.dto.UserCreateParams;
+import com.user.api_backend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

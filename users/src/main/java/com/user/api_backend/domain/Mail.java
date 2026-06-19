@@ -1,4 +1,4 @@
-package com.example.users.domain;
+package com.user.api_backend.domain;
 
 public class Mail {
 

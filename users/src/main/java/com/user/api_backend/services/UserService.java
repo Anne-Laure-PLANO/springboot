@@ -1,6 +1,6 @@
-package com.example.users.services;
+package com.user.api_backend.services;
 
-import com.example.users.entities.User;
+import com.user.api_backend.entities.User;
 
 import java.util.Optional;
 import java.util.UUID;

@@ -1,7 +1,7 @@
-package com.example.users.services;
+package com.user.api_backend.services;
 
-import com.example.users.entities.User;
-import com.example.users.repositories.JpaUserRepository;
+import com.user.api_backend.entities.User;
+import com.user.api_backend.repositories.JpaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

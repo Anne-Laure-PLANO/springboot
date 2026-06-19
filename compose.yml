@@ -1,25 +1,75 @@
 # Création d'un container Docker servant au stockage des données de jeu
 services:
   postgres-game:
-    image: postgres:alpine
+    image: postgres:16-alpine
     environment:
-      POSTGRES_DB: demo
-      POSTGRES_USER: demo
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${POSTGRES_GAME_DB}
+      POSTGRES_USER: ${POSTGRES_GAME_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_GAME_PASSWORD}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_GAME_USER} -d ${POSTGRES_GAME_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
-      - demo:/var/lib/postgresql
+      - square_game:/var/lib/postgresql
+
   postgres-users:
-    image: postgres:alpine
+    image: postgres:16-alpine
     environment:
-      POSTGRES_DB: demo
-      POSTGRES_USER: demo
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-    ports:
-      - "5433:5433"
+      POSTGRES_DB: ${POSTGRES_USER_DB}
+      POSTGRES_USER: ${POSTGRES_USER_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_USER_PASSWORD}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER_USER} -d ${POSTGRES_USER_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - users:/var/lib/postgresql
+
+
+
+
+  backend-square-game:
+    build:
+      context: ./square_game
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8081:8081"
+    environment:
+      BACKEND_GAME_PORT: ${BACKEND_GAME_PORT}
+      POSTGRES_GAME_PORT: ${POSTGRES_GAME_PORT}
+      POSTGRES_GAME_DB: ${POSTGRES_GAME_DB}
+      POSTGRES_GAME_USER: ${POSTGRES_GAME_USER}
+      POSTGRES_GAME_PASSWORD: ${POSTGRES_GAME_PASSWORD}
+    depends_on:
+      postgres-game:
+        condition: service_healthy
+      postgres-users:
+        condition: service_healthy
+
+
+  backend-user:
+    build:
+      context: ./users
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      BACKEND_USER_PORT: ${BACKEND_USER_PORT}
+      POSTGRES_USER_PORT: ${POSTGRES_USER_PORT}
+      POSTGRES_USER_DB: ${POSTGRES_USER_DB}
+      POSTGRES_USER_USER: ${POSTGRES_USER_USER}
+      POSTGRES_USER_PASSWORD: ${POSTGRES_USER_PASSWORD}
+    depends_on:
+      postgres-game:
+        condition: service_healthy
+      postgres-users:
+        condition: service_healthy
+
+
+
 volumes:
-  demo:
+  square_game:
   users:

@@ -1,4 +1,4 @@
-package com.example.users.controllers;
+package com.user.api_backend.controllers;
 
 public interface UserController {
 }

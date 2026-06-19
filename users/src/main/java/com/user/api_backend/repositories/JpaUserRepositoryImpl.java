@@ -1,7 +1,7 @@
-package com.example.users.repositories;
+package com.user.api_backend.repositories;
 
-import com.example.users.entities.User;
-import com.example.users.entities.UserRepository;
+import com.user.api_backend.entities.User;
+import com.user.api_backend.entities.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

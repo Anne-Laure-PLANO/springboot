@@ -1,3 +1,43 @@
+
+stages:
+  - welcome
+  - build
+  - docker
+
 premier_job:
+  stage: welcome
   script:
     - echo "Hello world !"
+
+build_square_game:
+  stage: build
+  image: maven:3.9.6-eclipse-temurin-21-alpine
+  script:
+    - mvn clean package
+  artifacts:
+    name: "square_game"
+    paths:
+      - target/*.jar
+    expire_in: 7 days
+
+build_user:
+  stage: build
+  image: maven:3.9.6-eclipse-temurin-21-alpine
+  script:
+    - mvn clean package
+  artifacts:
+    name: "user"
+    paths:
+      - target/*.jar
+    expire_in: 7 days
+
+docker_build:
+  stage: docker
+  image: docker:latest
+  needs:
+    - job: build_square_game
+      artifacts: true
+    - job: build_user
+      artifacts: true
+  script:
+    - docker compose up -d --build
